@@ -4,7 +4,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --dark-yellow: #e6b800;
+  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,16 +21,7 @@ body {
   color: rgb(var(--foreground-rgb));
 }
 
-.bg-primary {
-  background-color: var(--dark-yellow) !important;
-  color: black !important;
-}
 
-.btn-primary {
-  background-color: var(--dark-yellow) !important;
-  border-color: var(--dark-yellow) !important;
-  color: black !important;
-}
 
 .btn-primary:hover {
   background-color: #cc9900 !important;
@@ -38,8 +29,4 @@ body {
   color: black !important;
 }
 
-.nav-link.active {
-  background-color: var(--dark-yellow) !important;
-  color: black !important;
-  border-color: var(--dark-yellow) !important;
-}
+

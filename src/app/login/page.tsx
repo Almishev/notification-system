@@ -86,7 +86,7 @@ export default function LoginPage() {
                                     onClick={onLogin}
                                     disabled={buttonDisabled}
                                     type="button"
-                                    className="btn btn-primary w-100 mb-3"
+                                    className="btn btn-dark w-100 mb-3"
                                 >
                                     {loading ? "Влизам..." : "Влизане"}
                                 </button>

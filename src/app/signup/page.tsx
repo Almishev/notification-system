@@ -99,7 +99,7 @@ export default function SignupPage() {
                                     onClick={onSignup}
                                     disabled={buttonDisabled}
                                     type="button"
-                                    className="btn btn-primary w-100 mb-3"
+                                    className="btn btn-dark w-100 mb-3"
                                 >
                                     {loading ? "Създаване на акаунт..." : "Регистрация"}
                                 </button>

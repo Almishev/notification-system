@@ -5,21 +5,21 @@ export default function Home() {
     <main className="container py-5">
       <div className="row justify-content-center">
         <div className="col-md-8 text-center">
-          <h1 className="display-4 mb-4">Welcome to Email Reminder System</h1>
+          <h1 className="display-4 mb-4">Добре дошли в системата за имейл напомняния</h1>
           <p className="lead mb-4">
-            Schedule and manage your email notifications efficiently
+            Планирайте и управлявайте своите имейл известия ефективно
           </p>
           
           <div className="row g-4 py-4">
             <div className="col-md-6">
               <div className="card h-100">
                 <div className="card-body">
-                  <h3 className="card-title">Schedule Emails</h3>
+                  <h3 className="card-title">Планирай имейли</h3>
                   <p className="card-text">
-                    Create and schedule emails to be sent at specific dates and times.
+                    Създавайте и планирайте имейли, които да се изпращат на определени дати и часове.
                   </p>
-                  <Link href="/profile/new" className="btn btn-primary">
-                    Create New Email
+                  <Link href="/profile/new" className="btn btn-dark">
+                    Създай нов имейл
                   </Link>
                 </div>
               </div>
@@ -28,12 +28,12 @@ export default function Home() {
             <div className="col-md-6">
               <div className="card h-100">
                 <div className="card-body">
-                  <h3 className="card-title">Manage Schedule</h3>
+                  <h3 className="card-title">Моят профил</h3>
                   <p className="card-text">
-                    View and manage your scheduled emails in one place.
+                    Вижте и управлявайте всичките си планирани имейли на едно място от вашият профил.
                   </p>
-                  <Link href="/profile" className="btn btn-primary">
-                    View Dashboard
+                  <Link href="/profile" className="btn btn-dark">
+                    Виж таблото
                   </Link>
                 </div>
               </div>
@@ -42,7 +42,7 @@ export default function Home() {
 
           <div className="mt-4">
             <p className="text-muted">
-              Not logged in? <Link href="/login" className="text-decoration-none">Login</Link> or <Link href="/signup" className="text-decoration-none">Sign up</Link> to get started.
+              Не сте влезли? <Link href="/login" className="text-decoration-none">Вход</Link> или <Link href="/signup" className="text-decoration-none">Регистрация</Link>, за да започнете.
             </p>
           </div>
         </div>

@@ -81,7 +81,7 @@ export default function ProfilePage() {
     const logout = async () => {
         try {
             await axios.get('/api/users/logout');
-            toast.success('Logout successful');
+            toast.success('Успешно излизане');
             router.push('/login');
         } catch (error: any) {
             console.error("Logout failed:", error);
@@ -113,10 +113,10 @@ export default function ProfilePage() {
                                     <p className="text-muted mb-0">{user.email}</p>
                                 </div>
                                 <div className="d-flex gap-2">
-                                    <Link href={`/profile/${user._id}`} className="btn btn-primary">
+                                    <Link href={`/profile/${user._id}`} className="btn btn-dark">
                                     Насрочи нов имейл
                                     </Link>
-                                    <button onClick={logout} className="btn btn-danger">
+                                    <button onClick={logout} className="btn btn-secondary" disabled={loading}>
                                         Изход
                                     </button>
                                 </div>

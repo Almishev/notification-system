@@ -178,7 +178,7 @@ export default function UserProfile({params}: any) {
                                 <div className="d-grid gap-2">
                                     <button
                                         type="submit"
-                                        className="btn btn-primary"
+                                        className="btn btn-dark"
                                         disabled={loading}
                                     >
                                         {loading ? "Планирам..." : "Планирай имейл"}
