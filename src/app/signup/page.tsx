@@ -21,11 +21,10 @@ export default function SignupPage() {
         try {
             setLoading(true);
             const response = await axios.post("/api/users/signup", user);
-            console.log("Signup success", response.data);
+            console.log("Успешна регистрация", response.data);
             router.push("/login");
-            
         } catch (error:any) {
-            console.log("Signup failed", error.message);
+            console.log("Неуспешна регистрация", error.message);
             toast.error(error.message);
         } finally {
             setLoading(false);
@@ -51,33 +50,33 @@ export default function SignupPage() {
                     <div className="card shadow">
                         <div className="card-body">
                             <h1 className="text-center mb-4">
-                                {loading ? "Processing..." : "Sign Up"}
+                                {loading ? "Обработва се..." : "Регистрация"}
                             </h1>
                             <form>
                                 <div className="mb-3">
-                                    <label htmlFor="username" className="form-label">Username</label>
+                                    <label htmlFor="username" className="form-label">Потребителско име</label>
                                     <input 
                                         className="form-control"
                                         id="username"
                                         type="text"
                                         value={user.username}
                                         onChange={(e) => setUser({...user, username: e.target.value})}
-                                        placeholder="Enter your username"
+                                        placeholder="Въведете потребителско име"
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <label htmlFor="email" className="form-label">Имейл</label>
                                     <input 
                                         className="form-control"
                                         id="email"
                                         type="email"
                                         value={user.email}
                                         onChange={(e) => setUser({...user, email: e.target.value})}
-                                        placeholder="Enter your email"
+                                        placeholder="Въведете имейл"
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <label htmlFor="password" className="form-label">Парола</label>
                                     <div className="input-group">
                                         <input 
                                             className="form-control"
@@ -85,7 +84,7 @@ export default function SignupPage() {
                                             type={showPassword ? "text" : "password"}
                                             value={user.password}
                                             onChange={(e) => setUser({...user, password: e.target.value})}
-                                            placeholder="Enter your password"
+                                            placeholder="Въведете парола"
                                         />
                                         <button 
                                             type="button"
@@ -102,11 +101,11 @@ export default function SignupPage() {
                                     type="button"
                                     className="btn btn-primary w-100 mb-3"
                                 >
-                                    {loading ? "Creating account..." : "Sign Up"}
+                                    {loading ? "Създаване на акаунт..." : "Регистрация"}
                                 </button>
                                 <div className="text-center">
                                     <Link href="/login" className="text-decoration-none">
-                                        Already have an account? Login
+                                        Вече имате акаунт? Влезте
                                     </Link>
                                 </div>
                             </form>

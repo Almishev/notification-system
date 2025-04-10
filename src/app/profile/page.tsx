@@ -13,7 +13,7 @@ interface ScheduledEmail {
     subject: string;
     message: string;
     scheduledDate: string;
-    status: 'pending' | 'sent' | 'failed';
+    status: 'В процес' | 'Изпратен' | 'Неуспешен';
     createdAt: string;
 }
 
@@ -28,7 +28,7 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
 
-    // Fetch user details and scheduled emails
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -53,9 +53,9 @@ export default function ProfilePage() {
 
     const getStatusBadgeClass = (status: string) => {
         switch (status) {
-            case 'sent':
+            case 'Изпратен':
                 return 'bg-success';
-            case 'failed':
+            case 'Неуспешен':
                 return 'bg-danger';
             default:
                 return 'bg-warning';
@@ -63,15 +63,15 @@ export default function ProfilePage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm('Are you sure you want to delete this scheduled email?')) {
+        if (window.confirm('Сигурни ли сте, че искате да го изтриете?')) {
             try {
                 setDeleting(id);
                 await axios.delete(`/api/email/schedule/${id}`);
                 setScheduledEmails(emails => emails.filter(email => email._id !== id));
-                toast.success('Email deleted successfully');
+                toast.success('Изтриването е успешно');
             } catch (error: any) {
-                console.error("Error deleting email:", error);
-                toast.error(error.response?.data?.error || "Failed to delete email");
+                console.error("Грешка при изтриването:", error);
+                toast.error(error.response?.data?.error || "Изтриването неосъществено");
             } finally {
                 setDeleting(null);
             }
@@ -94,7 +94,7 @@ export default function ProfilePage() {
             <div className="container py-5">
                 <div className="text-center">
                     <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">Зареждане...</span>
                     </div>
                 </div>
             </div>
@@ -102,22 +102,22 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="container py-5">
+        <main className="container py-5 min-vh-100">
             <div className="row">
                 <div className="col-12 mb-4">
                     <div className="card shadow">
                         <div className="card-body">
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                                 <div>
-                                    <h2 className="card-title mb-0">Welcome, {user.username}!</h2>
+                                    <h2 className="card-title mb-0">Добре дошли, {user.username}!</h2>
                                     <p className="text-muted mb-0">{user.email}</p>
                                 </div>
                                 <div className="d-flex gap-2">
                                     <Link href={`/profile/${user._id}`} className="btn btn-primary">
-                                        Schedule New Email
+                                    Насрочи нов имейл
                                     </Link>
                                     <button onClick={logout} className="btn btn-danger">
-                                        Logout
+                                        Изход
                                     </button>
                                 </div>
                             </div>
@@ -128,20 +128,20 @@ export default function ProfilePage() {
                 <div className="col-12">
                     <div className="card shadow">
                         <div className="card-body">
-                            <h3 className="card-title mb-4">Scheduled Emails</h3>
+                            <h3 className="card-title mb-4">Насрочени имейли</h3>
                             {scheduledEmails.length === 0 ? (
-                                <p className="text-muted">No scheduled emails found.</p>
+                                <p className="text-muted">Няма намерени насрочени имейли.</p>
                             ) : (
                                 <div className="table-responsive">
                                     <table className="table table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Subject</th>
-                                                <th className="d-none d-md-table-cell">Recipients</th>
-                                                <th>Scheduled For</th>
-                                                <th>Status</th>
-                                                <th className="d-none d-md-table-cell">Created At</th>
-                                                <th>Actions</th>
+                                                <th>Тема</th>
+                                                <th className="d-none d-md-table-cell">Получатели</th>
+                                                <th>Насрочено за</th>
+                                                <th>Статус</th>
+                                                <th className="d-none d-md-table-cell">Създадено на</th>
+                                                <th>Действия</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -165,7 +165,7 @@ export default function ProfilePage() {
                                                             <EditEmailButton 
                                                                 email={email} 
                                                                 onUpdate={() => {
-                                                                    // Refresh the email list after update
+                                                                    
                                                                     const fetchData = async () => {
                                                                         try {
                                                                             const emailsResponse = await axios.get('/api/email/schedule');
@@ -201,6 +201,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }

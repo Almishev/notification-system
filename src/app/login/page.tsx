@@ -11,7 +11,7 @@ export default function LoginPage() {
     const [user, setUser] = React.useState({
         email: "",
         password: "",
-    })
+    });
     const [buttonDisabled, setButtonDisabled] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
@@ -20,11 +20,11 @@ export default function LoginPage() {
         try {
             setLoading(true);
             const response = await axios.post("/api/users/login", user);
-            console.log("Login success", response.data);
-            toast.success("Login success");
+            console.log("Успешно влизане", response.data);
+            toast.success("Успешно влизане");
             router.push("/profile");
         } catch (error:any) {
-            console.log("Login failed", error.message);
+            console.log("Неуспешно влизане", error.message);
             toast.error(error.message);
         } finally{
             setLoading(false);
@@ -49,21 +49,21 @@ export default function LoginPage() {
                 <div className="col-md-6 col-lg-4">
                     <div className="card shadow">
                         <div className="card-body">
-                            <h1 className="text-center mb-4">{loading ? "Processing..." : "Login"}</h1>
+                            <h1 className="text-center mb-4">{loading ? "Обработва се..." : "Влизане"}</h1>
                             <form>
                                 <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <label htmlFor="email" className="form-label">Имейл</label>
                                     <input 
                                         className="form-control"
                                         id="email"
                                         type="email"
                                         value={user.email}
                                         onChange={(e) => setUser({...user, email: e.target.value})}
-                                        placeholder="Enter your email"
+                                        placeholder="Въведете имейл"
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <label htmlFor="password" className="form-label">Парола</label>
                                     <div className="input-group">
                                         <input 
                                             className="form-control"
@@ -71,7 +71,7 @@ export default function LoginPage() {
                                             type={showPassword ? "text" : "password"}
                                             value={user.password}
                                             onChange={(e) => setUser({...user, password: e.target.value})}
-                                            placeholder="Enter your password"
+                                            placeholder="Въведете парола"
                                         />
                                         <button 
                                             type="button"
@@ -88,11 +88,11 @@ export default function LoginPage() {
                                     type="button"
                                     className="btn btn-primary w-100 mb-3"
                                 >
-                                    {loading ? "Logging in..." : "Login"}
+                                    {loading ? "Влизам..." : "Влизане"}
                                 </button>
                                 <div className="text-center">
                                     <Link href="/signup" className="text-decoration-none">
-                                        Don't have an account? Sign up
+                                        Нямате акаунт? Регистрирайте се
                                     </Link>
                                 </div>
                             </form>
@@ -101,5 +101,5 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
-    )
+    );
 }

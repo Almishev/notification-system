@@ -4,30 +4,62 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+const darkYellowStyle = {
+    backgroundColor: '#e6b800',
+    color: 'black'
+};
+
 export default function UserProfile({params}: any) {
     const router = useRouter();
     const [email, setEmail] = useState({
         subject: "",
         message: "",
-        to: "",
         scheduledDate: "",
         scheduledTime: ""
     });
+    const [recipients, setRecipients] = useState<string[]>([]);
+    const [currentInput, setCurrentInput] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const validateEmail = (email: string) => {
+        return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const email = currentInput.trim();
+            
+            if (email && validateEmail(email) && !recipients.includes(email)) {
+                setRecipients([...recipients, email]);
+                setCurrentInput("");
+            } else if (email && !validateEmail(email)) {
+                toast.error("Невалиден имейл адрес");
+            }
+        } else if (e.key === 'Backspace' && !currentInput && recipients.length > 0) {
+            setRecipients(recipients.slice(0, -1));
+        }
+    };
+
+    const removeRecipient = (indexToRemove: number) => {
+        setRecipients(recipients.filter((_, index) => index !== indexToRemove));
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (recipients.length === 0) {
+            toast.error("Моля, въведете поне един получател");
+            return;
+        }
+
         try {
             setLoading(true);
-            // Split email addresses and trim whitespace
-            const recipients = email.to.split(',').map(email => email.trim());
             
-            // Combine date and time into a single Date object
             const scheduledDateTime = new Date(`${email.scheduledDate}T${email.scheduledTime}`);
-
-            // Check if the scheduled time is in the past
+            
             if (scheduledDateTime < new Date()) {
-                toast.error("Cannot schedule email in the past");
+                toast.error("Не може да се планира имейл за миналото");
                 return;
             }
 
@@ -38,14 +70,16 @@ export default function UserProfile({params}: any) {
                 scheduledDate: scheduledDateTime
             });
             
-            toast.success("Email scheduled successfully!");
+            toast.success("Имейлът беше планиран успешно!");
             
-            setEmail({ subject: "", message: "", to: "", scheduledDate: "", scheduledTime: "" });
+            setEmail({ subject: "", message: "", scheduledDate: "", scheduledTime: "" });
+            setRecipients([]);
+            setCurrentInput("");
            
             router.push('/profile');
         } catch (error: any) {
-            console.error("Error scheduling email:", error);
-            toast.error(error.response?.data?.error || "Failed to schedule email");
+            console.error("Грешка при планиране на имейл:", error);
+            toast.error(error.response?.data?.error || "Неуспешно планиране на имейл");
         } finally {
             setLoading(false);
         }
@@ -57,38 +91,56 @@ export default function UserProfile({params}: any) {
                 <div className="col-md-8">
                     <div className="card shadow">
                         <div className="card-body">
-                            <h1 className="card-title text-center mb-4">Schedule Email</h1>
+                            <h1 className="card-title text-center mb-4">Планиране на съобщение</h1>
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <label htmlFor="to" className="form-label">To: (separate multiple emails with commas)</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="to"
-                                        value={email.to}
-                                        onChange={(e) => setEmail({...email, to: e.target.value})}
-                                        placeholder="recipient1@example.com, recipient2@example.com"
-                                        required
-                                    />
+                                    <label htmlFor="to" className="form-label">До:</label>
+                                    <div className="form-control d-flex flex-wrap gap-2 min-h-[100px] overflow-auto" style={{ minHeight: "60px" }}>
+                                        {recipients.map((recipient, index) => (
+                                            <span 
+                                                key={index} 
+                                                className="badge d-flex align-items-center"
+                                                style={{ ...darkYellowStyle, padding: "0.5rem", margin: "2px" }}
+                                            >
+                                                {recipient}
+                                                <button
+                                                    type="button"
+                                                    className="btn-close ms-2"
+                                                    style={{ fontSize: "0.5rem" }}
+                                                    onClick={() => removeRecipient(index)}
+                                                    aria-label="Remove"
+                                                ></button>
+                                            </span>
+                                        ))}
+                                        <input
+                                            type="text"
+                                            className="border-0 flex-grow-1 min-w-[120px]"
+                                            style={{ outline: "none" }}
+                                            value={currentInput}
+                                            onChange={(e) => setCurrentInput(e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder={recipients.length === 0 ? "Въведете имейл адреси..." : ""}
+                                        />
+                                    </div>
                                     <small className="form-text text-muted">
-                                        Enter one or more email addresses separated by commas
+                                        Натиснете Enter или запетая за да добавите имейл
                                     </small>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="subject" className="form-label">Subject:</label>
+                                    <label htmlFor="subject" className="form-label">Заглавие:</label>
                                     <input
                                         type="text"
                                         className="form-control"
                                         id="subject"
                                         value={email.subject}
                                         onChange={(e) => setEmail({...email, subject: e.target.value})}
-                                        placeholder="Email subject"
+                                        placeholder="Заглавие на имейла"
                                         required
                                     />
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col-md-6">
-                                        <label htmlFor="scheduledDate" className="form-label">Date:</label>
+                                        <label htmlFor="scheduledDate" className="form-label">Дата:</label>
                                         <input
                                             type="date"
                                             className="form-control"
@@ -100,7 +152,7 @@ export default function UserProfile({params}: any) {
                                         />
                                     </div>
                                     <div className="col-md-6">
-                                        <label htmlFor="scheduledTime" className="form-label">Time:</label>
+                                        <label htmlFor="scheduledTime" className="form-label">Час:</label>
                                         <input
                                             type="time"
                                             className="form-control"
@@ -112,14 +164,14 @@ export default function UserProfile({params}: any) {
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="message" className="form-label">Message:</label>
+                                    <label htmlFor="message" className="form-label">Съобщение:</label>
                                     <textarea
                                         className="form-control"
                                         id="message"
                                         rows={6}
                                         value={email.message}
                                         onChange={(e) => setEmail({...email, message: e.target.value})}
-                                        placeholder="Your message here..."
+                                        placeholder="Вашето съобщение тук..."
                                         required
                                     />
                                 </div>
@@ -129,14 +181,14 @@ export default function UserProfile({params}: any) {
                                         className="btn btn-primary"
                                         disabled={loading}
                                     >
-                                        {loading ? "Scheduling..." : "Schedule Email"}
+                                        {loading ? "Планирам..." : "Планирай имейл"}
                                     </button>
                                     <button
                                         type="button"
                                         className="btn btn-secondary"
                                         onClick={() => router.push('/profile')}
                                     >
-                                        Cancel
+                                        Отказ
                                     </button>
                                 </div>
                             </form>

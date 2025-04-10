@@ -4,6 +4,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --dark-yellow: #e6b800;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,12 +17,29 @@
 
 body {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #f0f0f0 !important;
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+}
+
+.bg-primary {
+  background-color: var(--dark-yellow) !important;
+  color: black !important;
+}
+
+.btn-primary {
+  background-color: var(--dark-yellow) !important;
+  border-color: var(--dark-yellow) !important;
+  color: black !important;
+}
+
+.btn-primary:hover {
+  background-color: #cc9900 !important;
+  border-color: #cc9900 !important;
+  color: black !important;
+}
+
+.nav-link.active {
+  background-color: var(--dark-yellow) !important;
+  color: black !important;
+  border-color: var(--dark-yellow) !important;
 }
