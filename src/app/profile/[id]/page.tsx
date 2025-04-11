@@ -3,11 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+// Removed inline styles and moved them to an external CSS file
 
-const darkYellowStyle = {
-    backgroundColor: '#e6b800',
-    color: 'black'
-};
 
 export default function UserProfile({params}: any) {
     const router = useRouter();
@@ -95,18 +92,16 @@ export default function UserProfile({params}: any) {
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
                                     <label htmlFor="to" className="form-label">До:</label>
-                                    <div className="form-control d-flex flex-wrap gap-2 min-h-[100px] overflow-auto" style={{ minHeight: "60px" }}>
+                                    <div className="form-control recipientsContainer">
                                         {recipients.map((recipient, index) => (
                                             <span 
                                                 key={index} 
-                                                className="badge d-flex align-items-center"
-                                                style={{ ...darkYellowStyle, padding: "0.5rem", margin: "2px" }}
+                                                className="badge badge-dark-yellow d-flex align-items-center"
                                             >
                                                 {recipient}
                                                 <button
                                                     type="button"
                                                     className="btn-close ms-2"
-                                                    style={{ fontSize: "0.5rem" }}
                                                     onClick={() => removeRecipient(index)}
                                                     aria-label="Remove"
                                                 ></button>
@@ -114,8 +109,7 @@ export default function UserProfile({params}: any) {
                                         ))}
                                         <input
                                             type="text"
-                                            className="border-0 flex-grow-1 min-w-[120px]"
-                                            style={{ outline: "none" }}
+                                            className="border-0 flex-grow-1 min-w-[120px] input-no-outline"
                                             value={currentInput}
                                             onChange={(e) => setCurrentInput(e.target.value)}
                                             onKeyDown={handleKeyDown}

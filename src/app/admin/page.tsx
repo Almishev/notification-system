@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -31,26 +31,7 @@ export default function AdminPanel() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('users');
 
-    useEffect(() => {
-        checkAdminAndLoadData();
-    }, []);
-
-    const checkAdminAndLoadData = async () => {
-        try {
-            const userResponse = await axios.get('/api/users/me');
-            if (!userResponse.data.data.isAdmin) {
-                toast.error('Неоторизиран достъп');
-                router.push('/profile');
-                return;
-            }
-            await loadData();
-        } catch (error) {
-            toast.error('Моля, влезте като администратор');
-            router.push('/login');
-        }
-    };
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             setLoading(true);
             const [usersResponse, emailsResponse] = await Promise.all([
@@ -72,7 +53,26 @@ export default function AdminPanel() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    const checkAdminAndLoadData = useCallback(async () => {
+        try {
+            const userResponse = await axios.get('/api/users/me');
+            if (!userResponse.data.data.isAdmin) {
+                toast.error('Неоторизиран достъп');
+                router.push('/profile');
+                return;
+            }
+            await loadData();
+        } catch (error) {
+            toast.error('Моля, влезте като администратор');
+            router.push('/login');
+        }
+    }, [router, loadData]);
+
+    useEffect(() => {
+        checkAdminAndLoadData();
+    }, [checkAdminAndLoadData]);
 
     const handleAdminStatusChange = async (userId: string, isAdmin: boolean) => {
         try {
@@ -182,15 +182,16 @@ export default function AdminPanel() {
                                                         </td>
                                                         <td>
                                                             <div className="form-check form-switch">
+                                                                <label htmlFor={`admin-toggle-${user._id}`} className="form-check-label">
+                                                                    {user.isAdmin ? 'Администратор' : 'Потребител'}
+                                                                </label>
                                                                 <input
+                                                                    id={`admin-toggle-${user._id}`}
                                                                     className="form-check-input"
                                                                     type="checkbox"
                                                                     checked={user.isAdmin}
                                                                     onChange={(e) => handleAdminStatusChange(user._id, e.target.checked)}
                                                                 />
-                                                                <label className="form-check-label">
-                                                                    {user.isAdmin ? 'Администратор' : 'Потребител'}
-                                                                </label>
                                                             </div>
                                                         </td>
                                                         <td>{new Date(user.createdAt).toLocaleDateString()}</td>
