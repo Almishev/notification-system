@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 // Зареждаме .env файла експлицитно
 dotenv.config();
 
-// Хардкодираме MongoDB Atlas URI
-const MONGO_URI = "mongodb+srv://almishev:asroma@cluster0.cyxfn.mongodb.net/notifications?retryWrites=true&w=majority&appName=Cluster0";
+// Използваме или env променлива, или хардкоднат бекъп, ако env не е наличен
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://almishev:asroma@cluster0.cyxfn.mongodb.net/notifications?retryWrites=true&w=majority&appName=Cluster0";
 
 // Singleton за състоянието на връзката
 let isConnected = false;
@@ -17,7 +17,7 @@ export async function connect() {
     }
 
     try {
-        console.log("Attempting to connect to MongoDB with URI");
+        console.log("Attempting to connect to MongoDB with URI", MONGO_URI);
         
         await mongoose.connect(MONGO_URI);
         isConnected = true;
@@ -34,7 +34,7 @@ export async function connect() {
         })
 
     } catch (error) {
-        console.log('Something goes wrong!');
+        console.log('Something goes wrong with MongoDB connection!');
         console.log(error);
         isConnected = false;
     }

@@ -12,4 +12,17 @@ jobs:
     steps:
       - name: Trigger Email Sending API
         run: |
-          curl -X GET "https://notification-system-f4dg.vercel.app/api/cron/send-scheduled-emails"
+          echo "Calling email API endpoint..."
+          response=$(curl -s -w "\n%{http_code}" "https://notification-system-f4dg.vercel.app/api/cron/send-scheduled-emails")
+          status_code=$(echo "$response" | tail -n1)
+          response_body=$(echo "$response" | sed '$d')
+
+          echo "Status code: $status_code"
+          echo "Response: $response_body"
+
+          if [ "$status_code" -ne 200 ]; then
+            echo "Error: API call failed with status $status_code"
+            exit 1
+          fi
+
+          echo "API call successful"
