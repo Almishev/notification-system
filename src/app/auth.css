@@ -1,0 +1,135 @@
+/* Стилове за страниците за вход и регистрация */
+
+/* Контейнер за формата */
+.auth-container {
+  max-width: 450px;
+  margin: 2rem auto;
+}
+
+/* Карта за формата */
+.auth-card {
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: white;
+}
+
+.auth-card-header {
+  background: linear-gradient(135deg, #3949ab 0%, #1e88e5 100%);
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.auth-card-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.auth-card-header p {
+  opacity: 0.9;
+}
+
+.auth-card-body {
+  padding: 2rem;
+}
+
+/* Стилове за входните полета */
+.auth-input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.auth-input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.auth-input-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.auth-input-group input:focus {
+  border-color: #4dabf7;
+  box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+  outline: 0;
+}
+
+.auth-input-group .input-icon {
+  position: absolute;
+  right: 1rem;
+  top: 2.5rem;
+  color: #6c757d;
+}
+
+/* Бутон за изпращане */
+.auth-submit-button {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(to right, #3949ab, #1e88e5);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-submit-button:hover {
+  background: linear-gradient(to right, #303f9f, #1976d2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(30, 136, 229, 0.3);
+}
+
+.auth-submit-button:disabled {
+  background: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Линкове */
+.auth-links {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-links a {
+  color: #1e88e5;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-links a:hover {
+  color: #0d47a1;
+  text-decoration: underline;
+}
+
+/* Съобщения за грешки */
+.auth-error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .auth-container {
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
+  
+  .auth-card-header,
+  .auth-card-body {
+    padding: 1.5rem;
+  }
+}

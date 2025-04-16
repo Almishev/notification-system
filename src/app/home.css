@@ -1,0 +1,69 @@
+/* Стилове за началната страница */
+
+/* Стил за главния банер */
+.home-banner {
+  background: linear-gradient(135deg, #3949ab 0%, #1e88e5 100%);
+  border-radius: 10px;
+  padding: 3rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.home-banner h1 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.home-banner p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+/* Стилове за карти на функционалности */
+.feature-card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  border-radius: 50%;
+  color: white;
+}
+
+/* Стилове за секции */
+.home-section {
+  padding: 3rem 0;
+}
+
+.home-section h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .home-banner {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  
+  .home-section {
+    padding: 2rem 0;
+  }
+}

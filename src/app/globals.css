@@ -1,0 +1,150 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  min-height: 100vh;
+  background-color: #f0f0f0 !important;
+  color: black !important;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.navbar {
+  background: none;
+  animation: none;
+}
+
+footer {
+  background: none;
+  animation: none;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard */
+  border: 1px solid transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn:hover {
+  background: initial;
+  color: initial;
+}
+
+.btn-primary:hover {
+  background-color: #cc9900 !important;
+  border-color: #cc9900 !important;
+  color: black !important;
+}
+
+.btn-dark {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+
+.btn-dark:hover {
+  color: #fff;
+  background-color: #23272b;
+  border-color: #1d2124;
+}
+
+.animated-background {
+  position: relative;
+  overflow: hidden;
+  background: none;
+}
+
+.animated-background::before {
+  content: none;
+}
+
+.scroll-icon {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.5rem;
+  color: #333;
+  animation: pulse 2s infinite, colorChange 5s infinite;
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+@keyframes colorChange {
+  0% {
+    color: #333;
+  }
+  25% {
+    color: #1a2a6c;
+  }
+  50% {
+    color: #b21f1f;
+  }
+  75% {
+    color: #fdbb2d;
+  }
+  100% {
+    color: #333;
+  }
+}
+
+@media (max-width: 768px) {
+  .text-center.mb-5 h2,
+  .text-center.mb-5 p {
+    color: black !important;
+  }
+
+  .d-flex.flex-column .col-12 {
+    margin-bottom: 1rem;
+  }
+}
+
+.text-center.mb-5 h2,
+.text-center.mb-5 p {
+  color: black !important;
+}
+
+
