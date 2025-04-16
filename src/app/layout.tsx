@@ -1,11 +1,9 @@
-'use client';
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
-import { useEffect } from 'react'
+import ClientRootLayout from './components/ClientRootLayout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,10 +17,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  useEffect(() => {
-    require('bootstrap/dist/js/bootstrap.bundle.min.js');
-  }, []);
-
   return (
     <html lang="en">
       <head>
@@ -32,39 +26,15 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} d-flex flex-column min-vh-100`}>
-        <Toaster 
-          position="top-center"
-          reverseOrder={false}
-          gutter={8}
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-              padding: '16px',
-              borderRadius: '8px',
-            },
-            success: {
-              duration: 3000,
-              style: {
-                background: '#4caf50',
-                color: '#fff',
-              },
-            },
-            error: {
-              duration: 3000,
-              style: {
-                background: '#f44336',
-                color: '#fff',
-              },
-            },
-          }}
-        />
-        <Navigation />
-        <main className="flex-grow-1">
-          {children}
-        </main>
-        <Footer />
+        <ClientRootLayout>
+          <>
+            <Navigation />
+            <main className="flex-grow-1">
+              {children}
+            </main>
+            <Footer />
+          </>
+        </ClientRootLayout>
       </body>
     </html>
   )
