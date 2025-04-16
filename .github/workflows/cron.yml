@@ -1,0 +1,15 @@
+name: Scheduled Email Sending
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: "*/5 * * * *"
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Email Sending API
+        run: |
+          curl -X GET "https://notification-system-f4dg.vercel.app/api/cron/send-scheduled-emails"
