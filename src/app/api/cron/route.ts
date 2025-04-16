@@ -11,8 +11,11 @@ if (!global.cronJobInitialized) {
     try {
       console.log('Running scheduled messages check...');
       
-      // Process scheduled emails
-      const emailResponse = await fetch('http://localhost:3000/api/email/send/email', {
+      // Get domain from env or use relative paths
+      const domain = process.env.DOMAIN || '';
+      
+      // Process scheduled emails - using relative path that works both locally and on Vercel
+      const emailResponse = await fetch(`${domain}/api/email/send/email`, {
         method: 'POST'
       });
 
@@ -23,23 +26,23 @@ if (!global.cronJobInitialized) {
       const emailResult = await emailResponse.json();
       console.log('Scheduled emails processed:', emailResult);
 
-      // Process scheduled Telegram messages
-      const telegramResponse = await fetch('http://localhost:3000/api/cron/send-scheduled-telegram', {
+      // Process scheduled SMS messages - using relative path
+      const SMSResponse = await fetch(`${domain}/api/cron/send-scheduled-sms`, {
         method: 'GET'
       });
 
-      if (!telegramResponse.ok) {
-        throw new Error(`Telegram sending failed: ${telegramResponse.statusText}`);
+      if (!SMSResponse.ok) {
+        throw new Error(`SMS sending failed: ${SMSResponse.statusText}`);
       }
 
-      const telegramResult = await telegramResponse.json();
-      console.log('Scheduled Telegram messages processed:', telegramResult);
+      const SMSResult = await SMSResponse.json();
+      console.log('Scheduled SMS messages processed:', SMSResult);
 
       return NextResponse.json({
         success: true,
         message: "Cron job executed successfully",
         emailResult,
-        telegramResult
+        SMSResult
       });
     } catch (error: any) {
       console.error("Cron job error:", error);
@@ -52,4 +55,4 @@ if (!global.cronJobInitialized) {
 
 export async function GET() {
   return NextResponse.json({ status: 'Cron job is running' });
-} 
+}
