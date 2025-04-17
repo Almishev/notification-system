@@ -1,0 +1,7 @@
+MONGO_URI="mongodb+srv://almishev:asroma@cluster0.cyxfn.mongodb.net/notifications?retryWrites=true&w=majority&appName=Cluster0"
+TOKEN_SECRET="nextauth123"
+DOMAIN="https://web-production-38df.up.railway.app"
+EMAIL_PORT="587"
+EMAIL_HOST="mail.privateemail.com"
+EMAIL_USER="admin@pirinpixel.com"
+EMAIL_PASS="asroma"
