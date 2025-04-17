@@ -29,14 +29,39 @@ export async function GET(request: NextRequest) {
         }
         
         const now = new Date();
-        console.log("Current date:", now);
+        console.log("Current server time:", now.toISOString());
+        console.log("Current server timezone offset:", now.getTimezoneOffset() / -60); // Показва часовата зона като часове разлика от UTC
         
+        // Получаваме всички планирани имейли
+        const allEmails = await ScheduledEmail.find();
+        console.log("All scheduled emails in system:", allEmails.map(email => ({
+            id: email._id,
+            recipients: email.recipients,
+            subject: email.subject,
+            status: email.status,
+            scheduledDate: email.scheduledDate,
+            createdAt: email.createdAt
+        })));
+        
+        // Намираме имейлите, които трябва да се изпратят
         const pendingEmails = await ScheduledEmail.find({
             status: 'pending',
             scheduledDate: { $lte: now }
         });
         
-        console.log(`Found ${pendingEmails.length} pending emails to send`);
+        console.log(`Found ${pendingEmails.length} pending emails ready to send (scheduled before or at ${now.toISOString()})`);
+        
+        if (pendingEmails.length > 0) {
+            console.log("Pending emails details:", pendingEmails.map(email => ({
+                id: email._id,
+                recipients: email.recipients,
+                subject: email.subject,
+                scheduledDate: email.scheduledDate,
+                scheduledTimestamp: email.scheduledDate.getTime(),
+                currentTimestamp: now.getTime(),
+                shouldSend: email.scheduledDate.getTime() <= now.getTime()
+            })));
+        }
         
         let successCount = 0;
         let errorCount = 0;
@@ -88,9 +113,12 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ 
             success: true, 
+            currentTime: now.toISOString(),
+            timezone: now.getTimezoneOffset() / -60,
             emailsProcessed: pendingEmails.length,
             emailsSent: successCount,
-            emailsFailed: errorCount
+            emailsFailed: errorCount,
+            allEmailsCount: allEmails.length
         });
     } catch (error) {
         console.error('Error processing emails:', error);

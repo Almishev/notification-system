@@ -1,0 +1,7 @@
+[jobs.email-scheduler]
+schedule = "*/5 * * * *"
+command = "curl -X GET $RAILWAY_STATIC_URL/api/cron/send-scheduled-emails"
+
+[jobs.sms-scheduler]
+schedule = "*/5 * * * *"
+command = "curl -X GET $RAILWAY_STATIC_URL/api/cron/send-scheduled-sms"
