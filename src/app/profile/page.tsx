@@ -120,7 +120,7 @@ export default function ProfilePage() {
         if (window.confirm('Сигурни ли сте, че искате да го изтриете?')) {
             try {
                 setDeleting(id);
-                await axios.delete(`/api/messages/sms/${id}`);
+                await axios.delete(`/api/messages/sms?id=${id}`);
                 setScheduledSMS(sms => sms.filter(s => s._id !== id));
                 toast.success('Изтриването е успешно');
             } catch (error: any) {

@@ -37,7 +37,7 @@ const scheduledSMSSchema = new mongoose.Schema({
         enum: ['pending', 'processing', 'sent', 'failed'],
         default: 'pending'
     },
-    bulkgateResponse: {
+    apiResponse: {
         type: Object,
         default: null
     },

@@ -7,6 +7,29 @@ import { getDataFromToken } from '@/helpers/getDataFromToken';
 // Свързваме се с базата данни
 connect();
 
+export async function GET(request: NextRequest) {
+    try {
+        // Извличаме ID на потребителя от токена
+        const userId = await getDataFromToken(request);
+        
+        if (!userId) {
+            return NextResponse.json({ error: "Не сте влезли в системата" }, { status: 401 });
+        }
+        
+        // Извличаме всички насрочени SMS съобщения за този потребител
+        const scheduledSMS = await ScheduledSMS.find({ createdBy: userId });
+        
+        return NextResponse.json({
+            success: true,
+            scheduledSMS
+        });
+
+    } catch (error: any) {
+        console.error("Грешка при извличане на SMS съобщения:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         // Извличаме ID на потребителя от токена
@@ -134,6 +157,54 @@ export async function PUT(request: NextRequest) {
 
     } catch (error: any) {
         console.error("Грешка при обновяване на SMS съобщение:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: NextRequest) {
+    try {
+        // Извличаме ID на потребителя от токена
+        const userId = await getDataFromToken(request);
+        
+        if (!userId) {
+            return NextResponse.json({ error: "Не сте влезли в системата" }, { status: 401 });
+        }
+        
+        // Извличане на ID на SMS от URL параметрите
+        const url = new URL(request.url);
+        const id = url.searchParams.get('id');
+        
+        if (!id) {
+            return NextResponse.json({ error: "ID на SMS не е предоставено" }, { status: 400 });
+        }
+        
+        console.log("Опит за изтриване на SMS с ID:", id);
+        
+        // Намиране на SMS в базата данни
+        const sms = await ScheduledSMS.findById(id);
+        
+        if (!sms) {
+            console.log("SMS не е намерено с ID:", id);
+            return NextResponse.json({ error: "SMS съобщението не е намерено" }, { status: 404 });
+        }
+        
+        // Проверка дали потребителят е собственик
+        if (sms.createdBy.toString() !== userId.toString()) {
+            console.log("Потребител няма право за изтриване:", userId, "SMS създаден от:", sms.createdBy);
+            return NextResponse.json({ error: "Нямате право да изтриете това съобщение" }, { status: 403 });
+        }
+        
+        // Изтриване на SMS от базата данни
+        await ScheduledSMS.findByIdAndDelete(id);
+        console.log("SMS успешно изтрито с ID:", id);
+        
+        return NextResponse.json({
+            message: "SMS съобщението е изтрито успешно",
+            success: true
+        });
+        
+    } catch (error: any) {
+        console.error("Грешка при изтриване на SMS съобщение:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

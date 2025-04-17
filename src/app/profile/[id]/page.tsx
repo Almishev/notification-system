@@ -1,10 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
-// CSS класове вместо inline стилове
 import './styles.css';
 
 export default function UserProfile({params}: any) {
@@ -25,29 +23,54 @@ export default function UserProfile({params}: any) {
     const [recipients, setRecipients] = useState<string[]>([]);
     const [currentInput, setCurrentInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const validateEmail = (email: string) => {
         return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     };
 
     const validatePhoneNumber = (phoneNumber: string) => {
-        // Валидация за международен формат на телефонен номер
         return phoneNumber.match(/^\+[1-9]\d{1,14}$/);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault();
-            const email = currentInput.trim();
-            
-            if (email && validateEmail(email) && !recipients.includes(email)) {
-                setRecipients([...recipients, email]);
-                setCurrentInput("");
-            } else if (email && !validateEmail(email)) {
-                toast.error("Невалиден имейл адрес");
-            }
+            addCurrentEmail();
         } else if (e.key === 'Backspace' && !currentInput && recipients.length > 0) {
             setRecipients(recipients.slice(0, -1));
+        }
+    };
+
+    const addCurrentEmail = () => {
+        const email = currentInput.trim();
+        
+        if (email && validateEmail(email) && !recipients.includes(email)) {
+            setRecipients([...recipients, email]);
+            setCurrentInput("");
+        } else if (email && !validateEmail(email)) {
+            toast.error("Невалиден имейл адрес");
+        }
+    };
+
+    const handleInputBlur = () => {
+        if (currentInput.trim()) {
+            addCurrentEmail();
+        }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData('text');
+        const emails = pastedText.split(/[,;\s]+/);
+        
+        const validEmails = emails.filter(email => {
+            const trimmedEmail = email.trim();
+            return trimmedEmail && validateEmail(trimmedEmail) && !recipients.includes(trimmedEmail);
+        });
+        
+        if (validEmails.length > 0) {
+            setRecipients([...recipients, ...validEmails]);
         }
     };
 
@@ -55,8 +78,16 @@ export default function UserProfile({params}: any) {
         setRecipients(recipients.filter((_, index) => index !== indexToRemove));
     };
 
+    const focusInput = () => {
+        inputRef.current?.focus();
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (currentInput.trim()) {
+            addCurrentEmail();
+        }
         
         if (messageType === 'email') {
             if (recipients.length === 0) {
@@ -113,7 +144,6 @@ export default function UserProfile({params}: any) {
             
             toast.success(`${messageType === 'email' ? 'Имейлът' : 'SMS съобщението'} беше планирано успешно!`);
             
-            // Reset form
             if (messageType === 'email') {
                 setEmail({ subject: "", message: "", scheduledDate: "", scheduledTime: "" });
                 setRecipients([]);
@@ -160,7 +190,7 @@ export default function UserProfile({params}: any) {
                                 {messageType === 'email' ? (
                                     <div className="mb-3">
                                         <label htmlFor="to" className="form-label">До:</label>
-                                        <div className="form-control d-flex flex-wrap gap-2 recipient-container">
+                                        <div className="form-control d-flex flex-wrap gap-2 recipient-container" onClick={focusInput}>
                                             {recipients.map((recipient, index) => (
                                                 <span 
                                                     key={index} 
@@ -176,18 +206,32 @@ export default function UserProfile({params}: any) {
                                                 </span>
                                             ))}
                                             <input
+                                                ref={inputRef}
                                                 type="text"
                                                 className="border-0 flex-grow-1 min-w-120 recipient-input"
                                                 value={currentInput}
                                                 onChange={(e) => setCurrentInput(e.target.value)}
                                                 onKeyDown={handleKeyDown}
+                                                onBlur={handleInputBlur}
+                                                onPaste={handlePaste}
                                                 placeholder={recipients.length === 0 ? "Въведете имейл адреси..." : ""}
                                                 aria-label="Email recipient input"
                                             />
                                         </div>
-                                        <small className="form-text text-muted">
-                                            Натиснете Enter или запетая за да добавите имейл
-                                        </small>
+                                        <div className="d-flex justify-content-between">
+                                            <small className="form-text text-muted">
+                                                Натиснете Enter или запетая за да добавите имейл
+                                            </small>
+                                            {currentInput && (
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-primary"
+                                                    onClick={addCurrentEmail}
+                                                >
+                                                    Добави имейл
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="mb-3">
