@@ -1,7 +1,7 @@
 [jobs.email-scheduler]
 schedule = "*/5 * * * *"
-command = "curl -X GET $RAILWAY_STATIC_URL/api/cron/send-scheduled-emails"
+command = "curl -X GET https://web-production-38df.up.railway.app/api/cron/send-scheduled-emails"
 
 [jobs.sms-scheduler]
 schedule = "*/5 * * * *"
-command = "curl -X GET $RAILWAY_STATIC_URL/api/cron/send-scheduled-sms"
+command = "curl -X GET https://web-production-38df.up.railway.app/api/cron/send-scheduled-sms"
