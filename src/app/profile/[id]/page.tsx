@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,25 @@ export default function UserProfile({params}: any) {
     const [recipients, setRecipients] = useState<string[]>([]);
     const [currentInput, setCurrentInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Определяне дали устройството е мобилно
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|windows phone/i;
+            setIsMobile(mobileRegex.test(userAgent) || window.innerWidth < 768);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+        };
+    }, []);
 
     const validateEmail = (email: string) => {
         return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
@@ -33,51 +51,78 @@ export default function UserProfile({params}: any) {
         return phoneNumber.match(/^\+[1-9]\d{1,14}$/);
     };
 
+    // Функция за добавяне на имейл към списъка с получатели
+    const addCurrentEmail = () => {
+        if (!currentInput.trim()) return;
+        
+        const email = currentInput.trim();
+        
+        if (validateEmail(email) && !recipients.includes(email)) {
+            setRecipients(prevRecipients => [...prevRecipients, email]);
+            setCurrentInput("");
+            
+            // Фокусираме отново върху полето за въвеждане
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 0);
+        } else if (!validateEmail(email)) {
+            toast.error("Невалиден имейл адрес");
+        } else if (recipients.includes(email)) {
+            toast.error("Този имейл вече е добавен");
+            setCurrentInput("");
+        }
+    };
+
+    // Функция за изтриване на имейл от списъка с получатели
+    const removeRecipient = (indexToRemove: number) => {
+        setRecipients(recipients.filter((_, index) => index !== indexToRemove));
+        // Фокусираме върху полето за въвеждане при премахване на получател
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 0);
+    };
+
+    // Функция за обработка на клавиатурни събития
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' || e.key === ',') {
+        if ((e.key === 'Enter' || e.key === ',') && currentInput.trim()) {
             e.preventDefault();
             addCurrentEmail();
         } else if (e.key === 'Backspace' && !currentInput && recipients.length > 0) {
-            setRecipients(recipients.slice(0, -1));
+            // При натискане на Backspace в празно поле премахваме последния имейл
+            setRecipients(prev => prev.slice(0, -1));
         }
     };
 
-    const addCurrentEmail = () => {
-        const email = currentInput.trim();
-        
-        if (email && validateEmail(email) && !recipients.includes(email)) {
-            setRecipients([...recipients, email]);
-            setCurrentInput("");
-        } else if (email && !validateEmail(email)) {
-            toast.error("Невалиден имейл адрес");
-        }
-    };
-
-    const handleInputBlur = () => {
-        if (currentInput.trim()) {
-            addCurrentEmail();
-        }
-    };
-
+    // Функция за обработка на paste събития
     const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         const pastedText = e.clipboardData.getData('text');
-        const emails = pastedText.split(/[,;\s]+/);
         
-        const validEmails = emails.filter(email => {
-            const trimmedEmail = email.trim();
-            return trimmedEmail && validateEmail(trimmedEmail) && !recipients.includes(trimmedEmail);
-        });
-        
-        if (validEmails.length > 0) {
-            setRecipients([...recipients, ...validEmails]);
+        // Проверяваме дали поставеният текст съдържа запетая или нов ред
+        if (pastedText.includes(',') || pastedText.includes(';') || pastedText.includes('\n')) {
+            // Разделяме текста на отделни имейли
+            const potentialEmails = pastedText.split(/[,;\n]+/).map(email => email.trim()).filter(Boolean);
+            
+            // Филтрираме валидните имейли
+            const validEmails = potentialEmails.filter(email => {
+                return validateEmail(email) && !recipients.includes(email);
+            });
+            
+            if (validEmails.length > 0) {
+                // Добавяме валидните имейли към списъка с получатели
+                setRecipients(prevRecipients => [...prevRecipients, ...validEmails]);
+                toast.success(`Добавени ${validEmails.length} имейла`);
+            } else {
+                // Ако няма валидни имейли, добавяме текста към текущото поле
+                setCurrentInput(prev => prev + pastedText);
+            }
+        } else {
+            // Ако поставеният текст не съдържа разделители, третираме го като един имейл
+            setCurrentInput(prev => prev + pastedText);
         }
     };
 
-    const removeRecipient = (indexToRemove: number) => {
-        setRecipients(recipients.filter((_, index) => index !== indexToRemove));
-    };
-
+    // Функция за фокусиране на input полето
     const focusInput = () => {
         inputRef.current?.focus();
     };
@@ -85,7 +130,8 @@ export default function UserProfile({params}: any) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (currentInput.trim()) {
+        // Добавяме недовършения имейл, ако има такъв
+        if (currentInput.trim() && validateEmail(currentInput.trim())) {
             addCurrentEmail();
         }
         
@@ -94,7 +140,7 @@ export default function UserProfile({params}: any) {
                 toast.error("Моля, въведете поне един получател");
                 return;
             }
-            if (!email.subject || !email.message) {
+            if (!email.subject || !email.message || !email.scheduledDate || !email.scheduledTime) {
                 toast.error("Моля, попълнете всички полета");
                 return;
             }
@@ -107,8 +153,8 @@ export default function UserProfile({params}: any) {
                 toast.error("Моля, въведете валиден телефонен номер в международен формат (например: +359888123456)");
                 return;
             }
-            if (!SMS.message) {
-                toast.error("Моля, въведете съобщение");
+            if (!SMS.message || !SMS.scheduledDate || !SMS.scheduledTime) {
+                toast.error("Моля, попълнете всички полета");
                 return;
             }
         }
@@ -124,6 +170,7 @@ export default function UserProfile({params}: any) {
             
             if (scheduledDateTime < new Date()) {
                 toast.error("Не може да се планира съобщение за миналото");
+                setLoading(false);
                 return;
             }
 
@@ -134,16 +181,17 @@ export default function UserProfile({params}: any) {
                     message: email.message,
                     scheduledDate: scheduledDateTime
                 });
+                toast.success("Имейлът беше планиран успешно!");
             } else {
                 await axios.post("/api/messages/sms", {
                     phoneNumber: SMS.phoneNumber,
                     message: SMS.message,
                     scheduledDate: scheduledDateTime
                 });
+                toast.success("SMS съобщението беше планирано успешно!");
             }
             
-            toast.success(`${messageType === 'email' ? 'Имейлът' : 'SMS съобщението'} беше планирано успешно!`);
-            
+            // Reset form
             if (messageType === 'email') {
                 setEmail({ subject: "", message: "", scheduledDate: "", scheduledTime: "" });
                 setRecipients([]);
@@ -187,10 +235,37 @@ export default function UserProfile({params}: any) {
                             </div>
 
                             <form onSubmit={handleSubmit}>
-                                {messageType === 'email' ? (
+                                {messageType === 'email' && (
                                     <div className="mb-3">
                                         <label htmlFor="to" className="form-label">До:</label>
-                                        <div className="form-control d-flex flex-wrap gap-2 recipient-container" onClick={focusInput}>
+                                        <div ref={containerRef} className="input-group mb-1">
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Въведете имейл"
+                                                value={currentInput}
+                                                onChange={(e) => setCurrentInput(e.target.value)}
+                                                onKeyDown={handleKeyDown}
+                                                onPaste={handlePaste}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-primary"
+                                                onClick={addCurrentEmail}
+                                                disabled={!currentInput.trim() || !validateEmail(currentInput.trim())}
+                                            >
+                                                Добави
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="form-control d-flex flex-wrap gap-2 recipient-container mt-2">
+                                            {recipients.length === 0 && (
+                                                <span className="text-muted w-100 text-center pt-2">
+                                                    Няма добавени имейли
+                                                </span>
+                                            )}
+                                            
                                             {recipients.map((recipient, index) => (
                                                 <span 
                                                     key={index} 
@@ -205,35 +280,23 @@ export default function UserProfile({params}: any) {
                                                     ></button>
                                                 </span>
                                             ))}
-                                            <input
-                                                ref={inputRef}
-                                                type="text"
-                                                className="border-0 flex-grow-1 min-w-120 recipient-input"
-                                                value={currentInput}
-                                                onChange={(e) => setCurrentInput(e.target.value)}
-                                                onKeyDown={handleKeyDown}
-                                                onBlur={handleInputBlur}
-                                                onPaste={handlePaste}
-                                                placeholder={recipients.length === 0 ? "Въведете имейл адреси..." : ""}
-                                                aria-label="Email recipient input"
-                                            />
                                         </div>
-                                        <div className="d-flex justify-content-between">
+                                        
+                                        <div className="d-flex justify-content-between align-items-center mt-1">
                                             <small className="form-text text-muted">
-                                                Натиснете Enter или запетая за да добавите имейл
+                                                {isMobile ? 
+                                                    'Въведете имейл и натиснете "Добави"' : 
+                                                    'Натиснете Enter или запетая за да добавите имейл'
+                                                }
                                             </small>
-                                            {currentInput && (
-                                                <button 
-                                                    type="button" 
-                                                    className="btn btn-sm btn-outline-primary"
-                                                    onClick={addCurrentEmail}
-                                                >
-                                                    Добави имейл
-                                                </button>
-                                            )}
+                                            <small className="form-text text-muted">
+                                                {recipients.length} {recipients.length === 1 ? 'получател' : 'получатели'}
+                                            </small>
                                         </div>
                                     </div>
-                                ) : (
+                                )}
+
+                                {messageType === 'SMS' && (
                                     <div className="mb-3">
                                         <label htmlFor="phoneNumber" className="form-label">Телефонен номер:</label>
                                         <input
@@ -267,7 +330,7 @@ export default function UserProfile({params}: any) {
                                 )}
 
                                 <div className="row mb-3">
-                                    <div className="col-md-6">
+                                    <div className="col-md-6 mb-2 mb-md-0">
                                         <label htmlFor="scheduledDate" className="form-label">Дата:</label>
                                         <input
                                             type="date"
