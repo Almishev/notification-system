@@ -1,0 +1,23 @@
+name: Scheduled Cron Jobs
+
+on:
+  schedule:
+    # Runs every 10 minutes
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    # This allows manually triggering the workflow
+
+jobs:
+  run-cron-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Process scheduled emails
+        run: |
+          curl -X GET ${{ secrets.APP_URL }}/api/cron/send-scheduled-emails
+        continue-on-error: true
+
+      - name: Process scheduled SMS
+        run: |
+          curl -X GET ${{ secrets.APP_URL }}/api/cron/send-scheduled-sms
+        continue-on-error: true
