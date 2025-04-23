@@ -2,7 +2,10 @@
 
 /* Стил за главния банер */
 .home-banner {
-  background: linear-gradient(135deg, #3949ab 0%, #1e88e5 100%);
+  background: linear-gradient(135deg, #222 0%, #000 100%);
+
+
+  
   border-radius: 10px;
   padding: 3rem 1.5rem;
   margin-bottom: 2rem;

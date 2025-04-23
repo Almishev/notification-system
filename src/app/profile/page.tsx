@@ -54,8 +54,9 @@ export default function ProfilePage() {
                 const userResponse = await axios.get('/api/users/me');
                 setUser(userResponse.data.data);
 
-                const emailsResponse = await axios.get('/api/email/schedule');
-                setScheduledEmails(emailsResponse.data.scheduledEmails);
+                // Използваме новия API път за имейли
+                const emailsResponse = await axios.get('/api/messages/email');
+                setScheduledEmails(emailsResponse.data.data || []);
 
                 try {
                     const smsResponse = await axios.get('/api/messages/sms');
@@ -104,7 +105,7 @@ export default function ProfilePage() {
         if (window.confirm('Сигурни ли сте, че искате да го изтриете?')) {
             try {
                 setDeleting(id);
-                await axios.delete(`/api/email/schedule/${id}`);
+                await axios.delete(`/api/messages/email/${id}`);
                 setScheduledEmails(emails => emails.filter(email => email._id !== id));
                 toast.success('Изтриването е успешно');
             } catch (error: any) {
@@ -303,8 +304,8 @@ export default function ProfilePage() {
                                                                 onUpdate={() => {
                                                                     const fetchData = async () => {
                                                                         try {
-                                                                            const emailsResponse = await axios.get('/api/email/schedule');
-                                                                            setScheduledEmails(emailsResponse.data.scheduledEmails);
+                                                                            const emailsResponse = await axios.get('/api/messages/email');
+                                                                            setScheduledEmails(emailsResponse.data.data || []);
                                                                         } catch (error: any) {
                                                                             console.error("Error fetching data:", error);
                                                                             toast.error("Failed to refresh email list");

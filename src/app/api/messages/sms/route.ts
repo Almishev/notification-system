@@ -41,16 +41,30 @@ export async function POST(request: NextRequest) {
         
         // Извличаме данните от заявката
         const reqBody = await request.json();
-        const { phoneNumber, message, scheduledDate } = reqBody;
+        const { phoneNumbers, phoneNumber, message, scheduledDate } = reqBody;
+        
+        // Определяме дали имаме един номер или множество номера
+        let smsPhoneNumbers: string[] = [];
+        
+        if (phoneNumbers && Array.isArray(phoneNumbers)) {
+            // Използваме масив от телефони
+            smsPhoneNumbers = phoneNumbers;
+        } else if (phoneNumber) {
+            // Поддържаме съвместимост със старите API извиквания, използващи един телефон
+            smsPhoneNumbers = [phoneNumber];
+        }
         
         // Валидираме данните
-        if (!phoneNumber || !message || !scheduledDate) {
+        if (smsPhoneNumbers.length === 0 || !message || !scheduledDate) {
             return NextResponse.json({ error: "Липсват задължителни полета" }, { status: 400 });
         }
         
-        // Валидираме телефонен номер
-        if (!/^\+[1-9]\d{1,14}$/.test(phoneNumber)) {
-            return NextResponse.json({ error: "Невалиден телефонен номер" }, { status: 400 });
+        // Валидираме телефонните номера
+        const invalidPhones = smsPhoneNumbers.filter(phone => !/^\+[1-9]\d{1,14}$/.test(phone));
+        if (invalidPhones.length > 0) {
+            return NextResponse.json({ 
+                error: `Невалидни телефонни номера: ${invalidPhones.join(', ')}` 
+            }, { status: 400 });
         }
 
         // Проверяваме дали датата не е в миналото
@@ -59,29 +73,32 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Не може да планирате съобщение в миналото" }, { status: 400 });
         }
 
-        // Създаваме ново планирано SMS съобщение
-        const newSMS = new ScheduledSMS({
-            phoneNumber,
-            message,
-            scheduledDate: scheduledDateTime,
-            createdBy: userId
-        });
+        // Създаваме планирани SMS съобщения за всеки телефонен номер
+        const createdSMS = [];
+        for (const phone of smsPhoneNumbers) {
+            const newSMS = new ScheduledSMS({
+                phoneNumber: phone,
+                message,
+                scheduledDate: scheduledDateTime,
+                createdBy: userId
+            });
+            
+            await newSMS.save();
+            createdSMS.push(newSMS);
+        }
         
-        // Запазваме в базата данни
-        await newSMS.save();
-        
-        // Актуализиране на статистиката на потребителя - увеличаваме общия брой SMS с 1
+        // Актуализиране на статистиката на потребителя - увеличаваме общия брой SMS с броя на създадените
         await User.findByIdAndUpdate(
             userId,
             {
-                $inc: { totalSMS: 1 }
+                $inc: { totalSMS: smsPhoneNumbers.length }
             }
         );
         
         return NextResponse.json({
-            message: "SMS съобщението е планирано успешно",
+            message: `${smsPhoneNumbers.length} SMS ${smsPhoneNumbers.length === 1 ? 'съобщение е' : 'съобщения са'} планирани успешно`,
             success: true,
-            sms: newSMS
+            sms: createdSMS
         });
 
     } catch (error: any) {

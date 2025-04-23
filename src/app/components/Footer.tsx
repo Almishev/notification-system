@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 // Стил за футъра с градиент
 const footerStyle = {
-    background: 'linear-gradient(135deg, #3949ab 0%, #1e88e5 100%)'
+    background: 'linear-gradient(135deg, #2b2b2b 0%, #000000 100%);'
 };
 
 const Footer = () => {

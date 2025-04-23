@@ -61,7 +61,7 @@ export default function Home() {
             <div className="col-lg-5">
               <div className="text-center">
                 <Image 
-                  src="/301.png" 
+                  src="/pirin-pixel-yellow.png" 
                   alt="система за изпращане на известия" 
                   className="img-fluid rounded shadow-lg" 
                   width={500} 

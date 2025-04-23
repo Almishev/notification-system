@@ -32,8 +32,7 @@ const EditEmailButton: React.FC<EditEmailButtonProps> = ({ email, onUpdate }) =>
         setLoading(true);
 
         try {
-            const response = await axios.put('/api/email/edit', {
-                emailId: email._id,
+            const response = await axios.put(`/api/messages/email/${email._id}`, {
                 recipients: formData.recipients.split(',').map(email => email.trim()),
                 subject: formData.subject,
                 message: formData.message,
@@ -66,7 +65,7 @@ const EditEmailButton: React.FC<EditEmailButtonProps> = ({ email, onUpdate }) =>
     }
 
     return (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <div className="modal show d-block modal-overlay">
             <div className="modal-dialog modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">

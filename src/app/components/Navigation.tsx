@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -7,7 +8,7 @@ import { useState, useEffect } from 'react';
 
 // Стил за навигацията с градиент
 const navStyle = {
-    background: 'linear-gradient(135deg, #3949ab 0%, #1e88e5 100%)'
+    background: 'linear-gradient(135deg, #2b2b2b 0%, #000000 100%);'
 };
 
 const Navigation = () => {
@@ -70,9 +71,18 @@ const Navigation = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark" style={navStyle}>
             <div className="container">
-                <Link href="/" className="navbar-brand">
-                    Система за известяване
-                </Link>
+                
+                <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
+    <Image 
+        src="/logo-messages-removebg-preview.png" 
+        alt="Logo messages" 
+        width={40} 
+        height={40} 
+        priority
+    />
+    <span className="text-light fw-bold">ИЗВЕСТИЕ</span>
+</Link>
+
                 <button 
                     className="navbar-toggler" 
                     type="button" 

@@ -14,9 +14,9 @@ if (!global.cronJobInitialized) {
       // Get domain from env or use relative paths
       const domain = process.env.DOMAIN || '';
       
-      // Process scheduled emails - using relative path that works both locally and on Vercel
-      const emailResponse = await fetch(`${domain}/api/email/send/email`, {
-        method: 'POST'
+      // Process scheduled emails - използваме новия ендпоинт
+      const emailResponse = await fetch(`${domain}/api/cron/send-scheduled-emails`, {
+        method: 'GET'
       });
 
       if (!emailResponse.ok) {
@@ -54,5 +54,8 @@ if (!global.cronJobInitialized) {
 }
 
 export async function GET() {
-  return NextResponse.json({ status: 'Cron job is running' });
+  return NextResponse.json({
+    message: "Cron job is running",
+    initialized: global.cronJobInitialized
+  });
 }
