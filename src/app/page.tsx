@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { FaEnvelope, FaClock, FaUsers, FaTable, FaBell, FaArrowDown } from 'react-icons/fa';
 import './home.css';
 
+// Последно обновено: 23.04.2025 - Принудително обновяване на production
 export default function Home() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
